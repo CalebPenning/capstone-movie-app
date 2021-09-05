@@ -1,5 +1,5 @@
 \echo 'Delete and recreate cinema db?'
-\prompt 'Return for yes or CTRL-C to cancel > ' 
+\prompt 'Return for yes or CTRL-C to cancel > ' foo
 
 DROP DATABASE cinema;
 CREATE DATABASE cinema;
@@ -9,7 +9,7 @@ CREATE DATABASE cinema;
 \i db-seed.sql
 
 \echo 'Delete and recreate cinema_test db?'
-\prompt 'Return for yes or CTRL-C to cancel > '
+\prompt 'Return for yes or CTRL-C to cancel > ' foo
 
 DROP DATABASE cinema_test;
 CREATE DATABASE cinema_test;
