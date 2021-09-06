@@ -9,6 +9,7 @@
   "author": "Caleb Penning",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.3",
     "bcrypt": "^5.0.1",
     "colors": "^1.4.0",
     "cors": "^2.8.5",
