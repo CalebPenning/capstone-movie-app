@@ -1,0 +1,99 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "New User Schema",
+    "description": "This Schema is used to validate a new user instance",
+    "default": {},
+    "examples": [
+        {
+            "username": "username",
+            "password": "somepassword",
+            "firstName": "first name",
+            "lastName": "last name",
+            "email": "email@email.com",
+            "bio": "little bit about me..."
+        }
+    ],
+    "required": [
+        "username",
+        "password",
+        "firstName",
+        "lastName",
+        "email"
+    ],
+    "properties": {
+        "username": {
+            "$id": "#/properties/username",
+            "type": "string",
+            "title": "The username schema",
+            "description": "A unique username for a user signing up",
+            "default": "",
+            "examples": [
+                "funguy123",
+                "babyfacedassassin30"
+            ]
+        },
+        "password": {
+            "$id": "#/properties/password",
+            "type": "string",
+            "title": "The password schema",
+            "description": "A hashed password.",
+            "default": "",
+            "examples": [
+                "V3RyG00Dp4$$w0rD"
+            ]
+        },
+        "firstName": {
+            "$id": "#/properties/firstName",
+            "type": "string",
+            "title": "The firstName schema",
+            "description": "User's first name. Used to register.",
+            "default": "",
+            "examples": [
+                "Bill",
+                "Ted",
+                "Keanu",
+                "John",
+                "Melissa",
+                "Dorothy"
+            ]
+        },
+        "lastName": {
+            "$id": "#/properties/lastName",
+            "type": "string",
+            "title": "The lastName schema",
+            "description": "User's last name. Used to register.",
+            "default": "",
+            "examples": [
+                "Smith",
+                "Jones",
+                "Washington",
+                "Gupta",
+                "Garcia"
+            ]
+        },
+        "email": {
+            "$id": "#/properties/email",
+            "type": "string",
+            "title": "The email schema",
+            "description": "The email address our user is signing up with",
+            "default": "",
+            "examples": [
+                "email@email.com",
+                "user@website.com"
+            ]
+        },
+        "bio": {
+            "$id": "#/properties/bio",
+            "type": "string",
+            "title": "The bio schema",
+            "description": "A biography for a user to sign up with. Not required. Can be edited in the future",
+            "default": "",
+            "examples": [
+                "little bit about me..."
+            ]
+        }
+    },
+    "additionalProperties": false
+}
