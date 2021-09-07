@@ -4,7 +4,6 @@
     "type": "object",
     "title": "New User Schema",
     "description": "This Schema is used to validate a new user instance",
-    "default": {},
     "examples": [
         {
             "username": "username",
@@ -24,32 +23,32 @@
     ],
     "properties": {
         "username": {
-            "$id": "#/properties/username",
             "type": "string",
             "title": "The username schema",
             "description": "A unique username for a user signing up",
-            "default": "",
+            "minLength": 1,
+            "maxLength": 30,
             "examples": [
                 "funguy123",
                 "babyfacedassassin30"
             ]
         },
         "password": {
-            "$id": "#/properties/password",
             "type": "string",
             "title": "The password schema",
             "description": "A hashed password.",
-            "default": "",
+            "minLength": 1,
+            "maxLength": 20,
             "examples": [
                 "V3RyG00Dp4$$w0rD"
             ]
         },
         "firstName": {
-            "$id": "#/properties/firstName",
             "type": "string",
             "title": "The firstName schema",
             "description": "User's first name. Used to register.",
-            "default": "",
+            "minLength": 1,
+            "maxLength": 30,
             "examples": [
                 "Bill",
                 "Ted",
@@ -60,11 +59,11 @@
             ]
         },
         "lastName": {
-            "$id": "#/properties/lastName",
             "type": "string",
             "title": "The lastName schema",
             "description": "User's last name. Used to register.",
-            "default": "",
+            "minLength": 1,
+            "maxLength": 30,
             "examples": [
                 "Smith",
                 "Jones",
@@ -74,22 +73,23 @@
             ]
         },
         "email": {
-            "$id": "#/properties/email",
             "type": "string",
             "title": "The email schema",
             "description": "The email address our user is signing up with",
-            "default": "",
+            "minLength": 1,
+            "maxLength": 60,
+            "format": "email",
             "examples": [
                 "email@email.com",
                 "user@website.com"
             ]
         },
         "bio": {
-            "$id": "#/properties/bio",
             "type": "string",
             "title": "The bio schema",
             "description": "A biography for a user to sign up with. Not required. Can be edited in the future",
-            "default": "",
+            "minLength": 1,
+            "maxLength": 500,
             "examples": [
                 "little bit about me..."
             ]
