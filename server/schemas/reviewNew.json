@@ -1,0 +1,82 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "Review schema",
+    "description": "This Schema validates all incoming reviews",
+    "examples": [
+        {
+            "id": 1,
+            "movieId": "asda400",
+            "userId": 30,
+            "rating": 10,
+            "title": "da movie",
+            "body": "dis is da review for da movie"
+        }
+    ],
+    "required": [
+        "id",
+        "movieId",
+        "userId",
+        "rating",
+        "title",
+        "body"
+    ],
+    "properties": {
+        "id": {
+            "type": "integer",
+            "title": "Review ID",
+            "description": "Unique ID for each post",
+            "examples": [
+                1
+            ]
+        },
+        "movieId": {
+            "type": "string",
+            "title": "movieId",
+            "description": "ID for Movie the review is associated with",
+            "examples": [
+                "asda400"
+            ]
+        },
+        "userId": {
+            "type": "integer",
+            "title": "userId",
+            "description": "ID of user that posted review",
+            "examples": [
+                30
+            ]
+        },
+        "rating": {
+            "type": "integer",
+            "title": "rating",
+            "description": "Numeric rating for a movie",
+            "minimum": 1,
+            "maximum": 10,
+            "examples": [
+                10
+            ]
+        },
+        "title": {
+            "type": "string",
+            "title": "The title schema",
+            "description": "An explanation about the purpose of this instance.",
+            "minLength": 1,
+            "maxLength": 100,
+            "examples": [
+                "da movie"
+            ]
+        },
+        "body": {
+            "type": "string",
+            "title": "The body schema",
+            "description": "An explanation about the purpose of this instance.",
+            "minLength": 1,
+            "maxLength": 500,
+            "examples": [
+                "dis is da review for da movie"
+            ]
+        }
+    },
+    "additionalProperties": false
+}
