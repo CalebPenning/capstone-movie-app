@@ -10,9 +10,10 @@ const router = new express.Router()
 router.post("/", async (req, res, next) => {
     try {
         let result = await Review.create(req.body)
-        return res.status(201).json({created: result.rows[0]})
+        return res.status(201).json(result)
     }
     catch(e) {
+        console.log(e)
         return next(new BadRequestError("Yer review got messed up bud"))
     }
 })
@@ -32,5 +33,16 @@ router.get("/users/:user_id", async (req, res, next) => {
         return next(e)
     }
 }) 
+
+router.get('/test', async (req, res, next) => {
+    try {
+        let tester = await Review.getFullReview(1)
+        return res.json({tester})
+    }
+
+    catch(e) {
+        return next(e)
+    }
+})
 
 module.exports = router

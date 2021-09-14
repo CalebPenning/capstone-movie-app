@@ -13,6 +13,11 @@ class Movie {
      *  as well as the imdb ID to make a direct call to the omdb API 
      */
 
+    static async getAll() {
+        let res = await db.query(`SELECT * FROM movies`)
+        return res.rows
+    }
+
     static async create({id, title}) {
         const duplicateCheck = await db.query(
             `SELECT id, title

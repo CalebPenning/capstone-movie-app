@@ -23,8 +23,9 @@ class Review {
             RETURNING id, movie_id AS "movieID", user_id AS "userID", rating, title, body, created_at AS "createdAt"`,
             [movieID, userID, rating, title, body]
         )
+        console.log(res)
 
-        if (res.rows[0]) return ({ results: res, success: true})
+        if (res.rows[0]) return ({ created: res.rows[0]})
         else return ({
             success: false,
             message: `unable to review movie with ID ${movieID}`
@@ -38,8 +39,24 @@ class Review {
             FROM reviews
             WHERE user_id = $1`, [id]
         )
+        console.log(res.rows)
         if (res.rows[0]) return res.rows
         else return `User with ID ${id} does not have any reviews.`
+    }
+
+    static async getFullReview(userID) {
+        try {
+            let res = await db.query(
+                `SELECT reviews.id, reviews.movie_id, reviews.user_id, reviews.rating, reviews.title, reviews.body, reviews.created_at, movies.id, movies.title
+                FROM reviews, movies
+                WHERE reviews.movie_id = movies.id AND reviews.user_id = $1`,
+                [userID]
+            )
+            return res.rows
+        }
+        catch(e) {
+            console.error(e)
+        }
     }
 }
 
