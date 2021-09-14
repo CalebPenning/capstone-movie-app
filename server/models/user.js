@@ -73,3 +73,5 @@ class User {
     // add follower, remove follower 
     // add like, remove like
 }
+
+module.exports = User
