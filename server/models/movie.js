@@ -30,28 +30,36 @@ class Movie {
             RETURNING id, title`, [id, title]
         )
 
-        const company = result.rows[0]
+        const movie = result.rows[0]
 
-        return company
-    }
-
-    static async getAll() {
-        const result = await db.query(
-            `SELECT * FROM movies`
-        )
-        return result.rows
+        return movie
     }
 
     static async getMovieByID(id) {
         const res = await axios.get(`${baseUrl}i=${id}`)
-        console.log(res)
         if (res.status === 200) return res.data
         else return new BadRequestError(`Movie with ID of ${id} not found in database.`)
     }
 
-    /**
-     *  TODO: ??
-     */
+    static async search(data) {
+        try {
+            const { search, type, year, pgNum } = data
+            let results
+            if (search && type && year && pgNum) results = await axios.get(`${baseUrl}s=${search}&type=${type}&y=${year}&page=${pgNum}`)
+            if (search && type && year) results = await axios.get(`${baseUrl}s=${search}&type=${type}&y=${year}`)
+            if (search && pgNum) results = await axios.get(`${baseUrl}s=${search}&page=${pgNum}`)
+            if (search && year) results = await axios.get(`${baseUrl}s=${search}&y=${year}`)
+            else results = await axios.get(`${baseUrl}s=${search}`)
+        
+            if (!results.status === 200) throw new BadRequestError(`Search did not elicit a 200 response. Check URL`)
+
+            return results.data 
+        } 
+        
+        catch (e) {
+            throw new BadRequestError(`Yer search went bad bud!`)
+        }
+    }
 }
 
 module.exports = Movie

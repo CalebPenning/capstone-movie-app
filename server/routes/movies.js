@@ -24,6 +24,26 @@ router.get("/", async (req, res, next) => {
     }
 })
 
+/**
+ *  Does a search via the OMDB API based on a few parameters
+ *  Basically just connects the OMDB API to our application 
+ */
+
+ router.get("/search", async (req, res, next) => {
+    try {
+        const results = await Movie.search(req.body)
+        return res.json(results)
+    } catch (e) {
+        return next(e)
+    }
+})
+
+
+/**
+ *  GET /<id> Get a certain movie's information 
+ *  based on its imdbID
+ */
+
 router.get("/:id", async (req, res, next) => {
     try {
         const result = await Movie.getMovieByID(req.params.id)
