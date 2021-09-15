@@ -57,7 +57,9 @@ router.post("/register", async (req, res, next) => {
             throw new BadRequestError(errs)
         }
 
-        const newUser = User.register({...req.body, bio: ""})
+        const bio = req.body.bio || ""
+
+        const newUser = User.register({...req.body, bio})
         const token = createToken(newUser)
         return res.status(201).json({ token, success: true })
     }
