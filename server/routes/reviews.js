@@ -14,7 +14,7 @@ router.post("/", async (req, res, next) => {
     }
     catch(e) {
         console.log(e)
-        return next(new BadRequestError("Yer review got messed up bud"))
+        return next(new BadRequestError(e))
     }
 })
 
@@ -26,22 +26,27 @@ router.post("/", async (req, res, next) => {
 router.get("/users/:user_id", async (req, res, next) => {
     try {
         const userReviews = await Review.getUserReviews(req.params.user_id) 
-        return res.json({reviews: userReviews})
+        return res.json({ reviews: userReviews })
     }
 
     catch(e) {
         return next(e)
     }
-}) 
+})
 
-router.get('/test', async (req, res, next) => {
+/**
+ *  GET /movies/:movie_id
+ *  Get all reviews for a certain movie or tv show 
+ */
+
+router.get("/movies/:movie_id", async (req, res, next) => {
     try {
-        let tester = await Review.getFullReview(1)
-        return res.json({tester})
+        const reviews = await Review.getMovieReviews(req.params.movie_id)
+        return res.json({ reviews })
     }
 
     catch(e) {
-        return next(e)
+        console.log(e)
     }
 })
 

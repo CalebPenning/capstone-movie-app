@@ -33,29 +33,52 @@ class Review {
 
     }
 
-    static async getUserReviews(id) {
-        let res = await db.query(
-            `SELECT id, movie_id AS "movieID", user_id AS "userID", rating, title, body, created_at AS "createdAt"
-            FROM reviews
-            WHERE user_id = $1`, [id]
-        )
-        console.log(res.rows)
-        if (res.rows[0]) return res.rows
-        else return `User with ID ${id} does not have any reviews.`
-    }
-
-    static async getFullReview(userID) {
+    // get all reviews and neccesary data to display on a users profile
+    static async getUserReviews(userID) {
         try {
             let res = await db.query(
-                `SELECT reviews.id, reviews.movie_id, reviews.user_id, reviews.rating, reviews.title, reviews.body, reviews.created_at, movies.id, movies.title
-                FROM reviews, movies
-                WHERE reviews.movie_id = movies.id AND reviews.user_id = $1`,
+                `SELECT 
+                reviews.id as "reviewID",  
+                reviews.user_id AS "userID", 
+                reviews.rating, 
+                reviews.title, reviews.body, 
+                reviews.created_at, 
+                movies.id AS "movieID", 
+                movies.title,
+                users.username
+                FROM reviews, movies, users
+                WHERE reviews.movie_id = movies.id 
+                AND reviews.user_id = $1
+                AND users.id = $1`,
                 [userID]
             )
             return res.rows
         }
         catch(e) {
             console.error(e)
+        }
+    }
+    // Get full review info, necessary user info, and necessary movie info for components
+
+    static async getMovieReviews(movieID) {
+        try {
+            let res = await db.query(
+                `SELECT 
+                reviews.id as "reviewID", 
+                reviews.rating, reviews.title, 
+                reviews.body, reviews.created_at, 
+                users.id AS "userID", 
+                users.username, movies.title, 
+                movies.id AS "movieID"
+                FROM reviews, users, movies
+                WHERE reviews.movie_id = $1 AND reviews.user_id = users.id AND movies.id = reviews.movie_id
+                ORDER BY reviews.created_at ASC`, [movieID]
+            )
+            return res.rows
+        }
+
+        catch(e) {
+            console.log(e)
         }
     }
 }
