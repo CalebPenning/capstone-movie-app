@@ -51,4 +51,8 @@ router.get("/movies/:movie_id", async (req, res, next) => {
     }
 })
 
+// update review
+
+// delete review 
+
 module.exports = router

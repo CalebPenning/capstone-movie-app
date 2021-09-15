@@ -49,6 +49,7 @@ class Movie {
     static async search(data) {
         try {
             const { search, type, year, pgNum } = data
+            // definitely refactor this
             let results
             if (search && type && year && pgNum) results = await axios.get(`${baseUrl}s=${search}&type=${type}&y=${year}&page=${pgNum}`)
             if (search && type && year) results = await axios.get(`${baseUrl}s=${search}&type=${type}&y=${year}`)

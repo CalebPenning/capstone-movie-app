@@ -4,6 +4,11 @@ const { NotFoundError, BadRequestError, UnauthorizedError } = require('../expres
 const { BCRYPT_WORK_FACTOR } = require('../config')
 
 class User {
+    static async getAll() {
+        const result = await db.query(`SELECT * FROM users;`)
+        return result.rows
+    }
+
     static async authenticate(username, password) {
         const result = await db.query(
             `SELECT username,
@@ -72,6 +77,10 @@ class User {
     // todo: get all following users, get all followed users
     // add follower, remove follower 
     // add like, remove like
+
+    static async followUser(userID, userToFollowID) {
+        
+    }
 }
 
 module.exports = User
