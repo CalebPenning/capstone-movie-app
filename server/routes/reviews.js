@@ -52,7 +52,16 @@ router.get("/movies/:movie_id", async (req, res, next) => {
 })
 
 // update review
+router.patch("/:id", async (req, res, next) => {
+    try {
+        
+    }
 
+    catch(e) {
+        console.log(e)
+        return next(e)  
+    }
+})
 // delete review 
 
 module.exports = router
