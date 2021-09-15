@@ -14,7 +14,7 @@ router.post("/", async (req, res, next) => {
     }
     catch(e) {
         console.log(e)
-        return next(new BadRequestError(e))
+        return next(e)
     }
 })
 
@@ -47,6 +47,7 @@ router.get("/movies/:movie_id", async (req, res, next) => {
 
     catch(e) {
         console.log(e)
+        return next(e)
     }
 })
 

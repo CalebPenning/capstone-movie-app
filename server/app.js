@@ -3,6 +3,7 @@ const cors = require('cors')
 const morgan = require('morgan')
 const { NotFoundError } = require('./expressError')
 
+const authRoutes = require('./routes/auth')
 const movieRoutes = require('./routes/movies')
 const reviewRoutes = require('./routes/reviews')
 const app = express()
@@ -11,6 +12,7 @@ app.use(cors())
 app.use(express.json())
 app.use(morgan("tiny"))
 
+app.use('/auth', authRoutes)
 app.use('/movies', movieRoutes)
 app.use('/reviews', reviewRoutes)
 
