@@ -66,6 +66,18 @@ router.patch("/:id", async (req, res, next) => {
     }
 })
 
+router.delete("/:id", async (req, res, next) => {
+    try {
+        const deleted = await Review.deleteReview(req.params.id)
+        return res.json({deleted})
+    }
+
+    catch(e) {
+        console.log(e)
+        return next(e)
+    }
+})
+
 // delete review 
 
 module.exports = router

@@ -104,22 +104,36 @@ class Review {
 
         if (!checkReview.rows[0]) throw new NotFoundError(
         `Review with ID ${revID} cannot be updated, as it does not exist.`)
-        
+        console.log(data)
         const { updateCols, values } = sqlForPartialUpdate(data, {rating: "rating", title: "title", body: "body"})
 
-        const reviewIdIdx = `$${values.length + 1}`
+        const reviewIdIdx = "$" + (values.length + 1)
 
-        const query = `
-        UPDATE reviews
+        const query = `UPDATE reviews
         SET ${updateCols}
         WHERE id = ${reviewIdIdx}
         RETURNING id, rating, title, body, created_at AS createdAt`
+        console.log(`QUERY: ${query}, UPDATE COLS AND DATA: ${updateCols, data}`)
 
         const result = await db.query(query, [...values, revID])
 
         const review = result.rows[0]
 
         if (!review) throw new NotFoundError(`No review with ID ${revID}`)
+
+        return review
+    }
+
+    static async deleteReview(revID) {
+        const result = await db.query(
+            `DELETE 
+            FROM reviews
+            WHERE id = $1
+            returning id, rating, title, body`,
+            [revID])
+        const review = result.rows[0] 
+
+        if (!review) throw new NotFoundError(`No review with ID of ${revID}`)
 
         return review
     }
