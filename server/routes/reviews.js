@@ -3,6 +3,7 @@ const { BadRequestError } = require('../expressError')
 const Movie = require('../models/movie')
 const Review = require('../models/review')
 const router = new express.Router()
+const omdbAPI = require('../models/omdbAPI')
 
 /**
  *  POST / Create a new review
@@ -54,7 +55,9 @@ router.get("/movies/:movie_id", async (req, res, next) => {
 // update review
 router.patch("/:id", async (req, res, next) => {
     try {
-        
+        let data = req.body
+        const updatedReview = await Review.updateReview(req.params.id, data)
+        return res.json({ updatedReview })
     }
 
     catch(e) {
@@ -62,6 +65,7 @@ router.patch("/:id", async (req, res, next) => {
         return next(e)  
     }
 })
+
 // delete review 
 
 module.exports = router

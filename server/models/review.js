@@ -1,21 +1,27 @@
 const db = require('../db')
 const { BadRequestError, NotFoundError, ExpressError } = require('../expressError')
+const sqlForPartialUpdate = require('../helpers/sql')
 const Movie = require('./movie')
 const User = require('./user')
+const omdbAPI = require('./omdbAPI')
 
 class Review {
     static async create({movieID, userID, rating, title, body}) {
         try {
+            console.log("starting movie check")
             let movieCheck = await db.query(
                 `SELECT id, title FROM movies WHERE id = $1`,
                 [movieID]
             )
-            if (!movieCheck.rows[0]) {
-                let movie = await Movie.getMovieByID(movieID)
-                let title = movie.result.title
-                await Movie.create({id: movieID, title})
-            }
             console.log(movieCheck)
+            if (!movieCheck.rows[0]) {
+                let movieInfo = await omdbAPI.getInfo(movieID)
+                console.log("this is the movie info: ", movieInfo)
+                let title = movieInfo.Title
+                console.log(movieID, title)
+                let created = await Movie.create({id: movieID, title})
+                console.log("This is created: ", created)
+            }
     
             let res = await db.query(
                 `INSERT INTO reviews
@@ -27,7 +33,7 @@ class Review {
             console.log(res)
     
             if (res.rows[0]) return ({ created: res.rows[0]})
-            else return new ExpressError(`unable to review movie with ID ${movieID}`, 400)  
+            else return new BadRequestError(`unable to review movie with ID ${movieID}`, 400)  
         }
         catch(e) {
             console.error(e)
@@ -89,6 +95,33 @@ class Review {
             console.error(e)
             return e
         }
+    }
+
+    static async updateReview(revID, data) {
+        const checkReview = await db.query(
+            `SELECT id FROM reviews WHERE id = $1`, [revID]
+        )
+
+        if (!checkReview.rows[0]) throw new NotFoundError(
+        `Review with ID ${revID} cannot be updated, as it does not exist.`)
+        
+        const { updateCols, values } = sqlForPartialUpdate(data, {rating: "rating", title: "title", body: "body"})
+
+        const reviewIdIdx = `$${values.length + 1}`
+
+        const query = `
+        UPDATE reviews
+        SET ${updateCols}
+        WHERE id = ${reviewIdIdx}
+        RETURNING id, rating, title, body, created_at AS createdAt`
+
+        const result = await db.query(query, [...values, revID])
+
+        const review = result.rows[0]
+
+        if (!review) throw new NotFoundError(`No review with ID ${revID}`)
+
+        return review
     }
 }
 

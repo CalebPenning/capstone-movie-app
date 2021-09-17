@@ -23,7 +23,7 @@ class Movie {
             `SELECT id, title
             FROM movies
             WHERE id = $1`,
-            [id, title]
+            [id]
         )
 
         if (duplicateCheck.rows[0]) 
