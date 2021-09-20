@@ -68,7 +68,6 @@ class Movie {
             for (let key in data) {
                 searchUrl += `${key}=${data[key]}&`
             }
-            console.log(searchUrl)
 
             const results = await axios.get(searchUrl)
 
@@ -78,7 +77,7 @@ class Movie {
         } 
         
         catch (e) {
-            throw new BadRequestError(`Yer search went bad bud!`)
+            throw new BadRequestError(`Invalid search.`)
         }
     }
 }
