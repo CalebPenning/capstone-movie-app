@@ -41,7 +41,7 @@ class Movie {
     }
 
     static async getMovieByID(id) {
-        const res = await axios.get(`${baseUrl}i=${id}`)
+        const res = await axios.get(`${baseUrl}i=${id}&plot=full`)
         if (res.status === 200) return res.data
         else return new BadRequestError(`Movie with ID of ${id} not found in database.`)
     }

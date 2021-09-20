@@ -184,7 +184,6 @@ class User {
     }
 
     // todo: 
-    // add like, remove like
     // get all liked reviews given a user id 
 
     static async like(userID, reviewID) {
@@ -204,8 +203,7 @@ class User {
             `INSERT INTO
             likes (user_id, review_id)
             VALUES ($1, $2)
-            RETURNING user_id AS "userID",
-            review_id AS "reviewID"`, 
+            RETURNING review_id AS "reviewID"`, 
             [userID, reviewID]
         )
 
@@ -232,7 +230,8 @@ class User {
             FROM likes
             WHERE user_id = $1
             AND review_id = $2
-            RETURNING review_id AS "reviewID"`
+            RETURNING review_id AS "reviewID"`,
+            [userID, reviewID]
         )
 
         if (!result.rows[0]) throw new BadRequestError(`Review with ID ${reviewID} could not be removed from likes`)
