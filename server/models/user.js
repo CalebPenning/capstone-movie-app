@@ -183,9 +183,66 @@ class User {
         return followers.rows
     }
 
-    // todo: get all following users, get all followed users
-    // add follower, remove follower 
+    // todo: 
     // add like, remove like
+    // get all liked reviews given a user id 
+
+    static async like(userID, reviewID) {
+        const userCheck = await db.query(
+            `SELECT id, username FROM users WHERE id = $1`, [userID]
+        )
+
+        if (!userCheck.rows[0]) throw new NotFoundError(`User with ID ${userID} not found`)
+
+        const reviewCheck = await db.query(
+            `SELECT id, title, body FROM reviews WHERE id = $1`, [reviewID]
+        )
+
+        if (!reviewCheck.rows[0]) throw new NotFoundError(`Review with ID ${reviewID} not found`)
+
+        const result = await db.query(
+            `INSERT INTO
+            likes (user_id, review_id)
+            VALUES ($1, $2)
+            RETURNING user_id AS "userID",
+            review_id AS "reviewID"`, 
+            [userID, reviewID]
+        )
+
+        if (!result.rows[0]) throw new BadRequestError(`Could not successfully like Review with ID ${reviewID}`)
+
+        return result.rows[0]
+    }
+
+    static async unlike(userID, reviewID) {
+        const userCheck = await db.query(
+            `SELECT id, username FROM users WHERE id = $1`, [userID]
+        )
+
+        if (!userCheck.rows[0]) throw new NotFoundError(`User with ID ${userID} not found`)
+
+        const reviewCheck = await db.query(
+            `SELECT id, title, body FROM reviews WHERE id = $1`, [reviewID]
+        )
+
+        if (!reviewCheck.rows[0]) throw new NotFoundError(`Review with ID ${reviewID} not found`)
+
+        const result = await db.query(
+            `DELETE
+            FROM likes
+            WHERE user_id = $1
+            AND review_id = $2
+            RETURNING review_id AS "reviewID"`
+        )
+
+        if (!result.rows[0]) throw new BadRequestError(`Review with ID ${reviewID} could not be removed from likes`)
+
+        return result.rows[0]
+    }
+
+    static async getLikedReviews(userID) {
+
+    }
 }
 
 module.exports = User

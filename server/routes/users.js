@@ -70,4 +70,42 @@ router.get('/:id/followers', async (req, res, next) => {
     }
 })
 
+router.get('/:id/likes', async (req, res, next) => {
+    try {
+        const userID = req.params.id
+        const liked = await User.getLikedReviews(userID)
+        return res.json({liked})
+    }
+    catch(e) {
+        console.log(e)
+        return next(e)
+    }
+})
+
+router.post('/:id/likes', async (req, res, next) => {
+    try {
+        const { reviewID } = req.body
+        const userID = req.params.id
+        const liked = await User.like(userID, reviewID)
+        return res.json({liked})
+    }
+    catch(e) {
+        console.log(e)
+        return next(e)
+    }
+})
+
+router.delete('/:id/likes', async (req, res, next) => {
+    try {
+        const { reviewID } = req.body
+        const userID = req.params.id
+        const unliked = await User.unlike(userID, reviewID)
+        return res.json({unliked})
+    }
+    catch (e) {
+        console.log(e)
+        return next(e)
+    }
+})
+
 module.exports = router
