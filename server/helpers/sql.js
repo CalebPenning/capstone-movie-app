@@ -32,6 +32,4 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
-console.log(sqlForPartialUpdate({title: "ok", body: "yeah whatever", rating:10}, {title: "title", body: "body", rating: "rating"}))
-
 module.exports = sqlForPartialUpdate

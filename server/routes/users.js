@@ -23,4 +23,9 @@ router.get('/:id/reviews', async (req, res, next) => {
     catch(e){}
 })
 
+router.post('/:id/follows', async (req, res, next) => {
+    const userToFollowID = req.query
+    
+})
+
 module.exports = router

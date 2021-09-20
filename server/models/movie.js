@@ -48,18 +48,33 @@ class Movie {
 
     static async search(data) {
         try {
-            const { search, type, year, pgNum } = data
-            // definitely refactor this
-            let results
-            if (search && type && year && pgNum) results = await axios.get(`${baseUrl}s=${search}&type=${type}&y=${year}&page=${pgNum}`)
-            if (search && type && year) results = await axios.get(`${baseUrl}s=${search}&type=${type}&y=${year}`)
-            if (search && pgNum) results = await axios.get(`${baseUrl}s=${search}&page=${pgNum}`)
-            if (search && year) results = await axios.get(`${baseUrl}s=${search}&y=${year}`)
-            else results = await axios.get(`${baseUrl}s=${search}`)
-        
-            if (!results.status === 200) throw new BadRequestError(`Search did not elicit a 200 response. Check URL`)
+            /**
+             *  Search takes a few parameters:
+             *  s = Search term. REQUIRED. The keyword(s) the user uses to search for a movie or tv show
+             *  y = Year of release. OPTIONAL. 
+             *  type = Type of result. Valid options include:
+             *  "movie", "series", "episode"
+             *  OPTIONAL
+             *  page = page number. Defaults to one. 
+             * 
+             *  Sending a request like:
+             *  {s: "titanic", type: "movie", y: 1997, page: 1}
+             *  
+             *  will build this url:
+             *  `baseurl.com/?apikey=apikey&s=titanic&type=movie&y=1997&page=1&`
+             *  call the api, and return the results
+             */
+            let searchUrl = baseUrl
+            for (let key in data) {
+                searchUrl += `${key}=${data[key]}&`
+            }
+            console.log(searchUrl)
 
-            return results.data 
+            const results = await axios.get(searchUrl)
+
+            if (!results.status === 200) throw new BadRequestError(`Invalid Search`)
+
+            return results.data
         } 
         
         catch (e) {

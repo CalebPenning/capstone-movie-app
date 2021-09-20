@@ -79,8 +79,32 @@ class User {
     // add like, remove like
 
     static async followUser(userID, userToFollowID) {
-        
+        // check and make sure both users are actually in the db
+        const check1 = await db.query(
+            `SELECT username FROM users WHERE id = $1`, [userID]
+        )
+
+        if (!check1.rows[0]) throw new NotFoundError(`User with ID ${userID} not found`)
+
+        const check2 = await db.query(
+            `SELECT username FROM users WHERE id = $1`, [userToFollowID]
+        )
+
+        if (!check2.rows[0]) throw new NotFoundError(`User with ID ${userToFollowID} not found`)
+
+        const result = await db.query(
+            `INSERT INTO follows
+            (user_following_id, user_to_be_followed_id)
+            VALUES ($1, $2)
+            RETURNING user_following_id AS userFollowingId, 
+            user_to_be_followed_id AS userFollowedId
+            `, [userID, userToFollowID]
+        )
+
+        return result.rows[0]
     }
+
+    
 }
 
 module.exports = User

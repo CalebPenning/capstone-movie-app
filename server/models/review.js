@@ -6,14 +6,22 @@ const User = require('./user')
 const omdbAPI = require('./omdbAPI')
 
 class Review {
+    static async get(id) {
+        const result = await db.query(
+            `SELECT id, rating, title, body, created_at AS createdAt
+            FROM reviews WHERE id = $1`, [id]
+        )
+        if (!result.rows[0]) throw new NotFoundError(`Review with ID ${id} not found`)
+
+        return result.rows[0]
+    }
+
     static async create({movieID, userID, rating, title, body}) {
         try {
-            console.log("starting movie check")
+            // check for movie in db, if not there, create it
             let movieCheck = await db.query(
                 `SELECT id, title FROM movies WHERE id = $1`,
-                [movieID]
-            )
-            console.log(movieCheck)
+                [movieID])
             if (!movieCheck.rows[0]) {
                 let movieInfo = await omdbAPI.getInfo(movieID)
                 console.log("this is the movie info: ", movieInfo)
@@ -22,7 +30,7 @@ class Review {
                 let created = await Movie.create({id: movieID, title})
                 console.log("This is created: ", created)
             }
-    
+            
             let res = await db.query(
                 `INSERT INTO reviews
                 (movie_id, user_id, rating, title, body)
@@ -30,8 +38,7 @@ class Review {
                 RETURNING id, movie_id AS "movieID", user_id AS "userID", rating, title, body, created_at AS "createdAt"`,
                 [movieID, userID, rating, title, body]
             )
-            console.log(res)
-    
+
             if (res.rows[0]) return ({ created: res.rows[0]})
             else return new BadRequestError(`unable to review movie with ID ${movieID}`, 400)  
         }
@@ -50,10 +57,10 @@ class Review {
                 reviews.id as "reviewID",  
                 reviews.user_id AS "userID", 
                 reviews.rating, 
-                reviews.title, reviews.body, 
+                reviews.title AS "reviewTitle", reviews.body, 
                 reviews.created_at AS "createdAt", 
                 movies.id AS "movieID", 
-                movies.title,
+                movies.title AS "movieTitle",
                 users.username
                 FROM reviews, movies, users
                 WHERE reviews.movie_id = movies.id 
