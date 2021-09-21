@@ -104,6 +104,8 @@ class Review {
         }
     }
 
+    // programatically updates a review based on some params
+
     static async updateReview(revID, data) {
         const checkReview = await db.query(
             `SELECT id FROM reviews WHERE id = $1`, [revID]

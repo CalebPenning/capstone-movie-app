@@ -1,13 +1,14 @@
 const db = require('../db')
 const bcrypt = require('bcrypt')
 const { NotFoundError, BadRequestError, UnauthorizedError } = require('../expressError')
+const sqlForPartialUpdate = require('../helpers/sql')
 const { BCRYPT_WORK_FACTOR } = require('../config')
 
 class User {
-    static async getAll() {
-        const result = await db.query(`SELECT * FROM users;`)
-        return result.rows
-    }
+    // static async getAll() {
+    //     const result = await db.query(`SELECT * FROM users;`)
+    //     return result.rows
+    // }
 
     static async authenticate(username, password) {
         const result = await db.query(
@@ -60,6 +61,25 @@ class User {
         return user
     }
 
+    static async update(userID, data) {
+        const checkUser = await this.get(userID)
+        if (!checkUser.username) throw new NotFoundError(`No user with ID ${userID} found`)
+        const { updateCols, values } = sqlForPartialUpdate(data, {firstName: "first_name", lastName: "last_name", email: "email", bio: "bio"})
+
+        const usernameIdx = "$" + (values.length + 1)
+
+        const query = 
+        `UPDATE users
+        SET ${updateCols}
+        WHERE id = ${usernameIdx}
+        RETURNING id, username, 
+        first_name AS firstName,
+        last_name AS lastName,
+        email, bio`
+
+        const result = await db.query(query, [...values, userID])
+    }
+
     static async get(id) {
         const result = await db.query(
             `SELECT username,
@@ -70,8 +90,8 @@ class User {
             FROM users
             WHERE id = $1`, [id])
 
-        if (result.rows[0]) return result.rows[0]
-        else throw new BadRequestError(`No known user with id ${id}`)
+        if (!result.rows[0]) throw new NotFoundError(`No known user with id ${id}`)
+        return result.rows[0]
     }
 
     // todo: get all following users, get all followed users

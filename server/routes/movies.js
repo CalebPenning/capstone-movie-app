@@ -7,33 +7,17 @@ const Movie = require('../models/movie')
 const router = new express.Router()
 
 /**
- *  GET / Get all movies
- *  this route exists for debugging purposes 
- *  simply returns a list of all movies in the db currently
- *  does the trick 
- */
-
-router.get("/", async (req, res, next) => {
-    try {
-        const result = await Movie.getAll()
-        return res.json({ result })
-    }
-
-    catch(e) {
-        return next(e)
-    }
-})
-
-/**
  *  Does a search via the OMDB API based on a few parameters
- *  Basically just connects the OMDB API to our application 
+ *  Basically just connects the OMDB API to the application 
  */
 
  router.get("/search", async (req, res, next) => {
     try {
         const results = await Movie.search(req.body)
         return res.json(results)
-    } catch (e) {
+    } 
+    catch (e) {
+        console.log(e)
         return next(e)
     }
 })
@@ -51,6 +35,7 @@ router.get("/:id", async (req, res, next) => {
     }
 
     catch(e) {
+        console.log(e)
         return next(e)
     }
 })
@@ -63,7 +48,8 @@ router.get("/:id/reviews", async (req, res, next) => {
         return res.json(reviews)
     }
     catch(e) {
-
+        console.log(e)
+        return next(e)
     }
 })
 
