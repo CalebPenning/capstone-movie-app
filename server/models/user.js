@@ -183,9 +183,6 @@ class User {
         return followers.rows
     }
 
-    // todo: 
-    // get all liked reviews given a user id 
-
     static async like(userID, reviewID) {
         const userCheck = await db.query(
             `SELECT id, username FROM users WHERE id = $1`, [userID]
@@ -240,7 +237,29 @@ class User {
     }
 
     static async getLikedReviews(userID) {
+        const userCheck = await db.query(
+            `SELECT id, username FROM users WHERE id = $1`, [userID]
+        )
 
+        if (!userCheck.rows[0]) throw new NotFoundError(`User with ID ${userID} not found`)
+
+        const result = await db.query(
+            `SELECT
+            reviews.rating, reviews.title AS "reviewTitle",
+            reviews.body, reviews.created_at AS "createdAt",
+            users.username AS "postedBy",
+            users.id AS "userID",
+            movies.title AS "movieTitle",
+            movies.id AS "movieID"
+            FROM reviews, likes, users, movies
+            WHERE likes.user_id = $1 AND likes.review_id = reviews.id
+            AND reviews.user_id = users.id AND reviews.movie_id = movies.id`,
+            [userID]
+        )
+
+        if (!result.rows[0]) return { message: `User with ID ${userID} hasn't published any reviews yet` }
+    
+        return result.rows
     }
 }
 
