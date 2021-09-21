@@ -29,14 +29,13 @@ router.get('/:id/reviews', async (req, res, next) => {
 })
 
 /**
- *  The following route 
+ *  This route allows a user to follow another user  
  */
 router.post('/:id/following', async (req, res, next) => {
     try {
+        const userID = req.params.id
         const { userToFollowId } = req.body
         if (typeof userToFollowId !== "number") throw new BadRequestError("ID must be type number")
-        const userID = req.params.id
-        console.log(userToFollowId, userID)
         const followed = await User.followUser(userID, userToFollowId)
         return res.json({followed})
     }
@@ -52,6 +51,21 @@ router.get('/:id/following', async (req, res, next) => {
         const following = await User.getFollowedUsers(userID)
         return res.json({following})
     }
+    catch(e) {
+        console.log(e)
+        return next(e)
+    }
+})
+
+router.delete('/:id/following', async (req, res, next) => {
+    try {
+        const userID = req.params.id
+        const { userToUnfollowID } = req.body
+        if (typeof userToUnfollowID !== "number") throw new BadRequestError("ID must be type number")
+        const unfollowed = await User.unfollowUser(userID, userToUnfollowID)
+        return res.json({ unfollowed })
+    }
+
     catch(e) {
         console.log(e)
         return next(e)
