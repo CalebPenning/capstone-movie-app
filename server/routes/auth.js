@@ -8,6 +8,7 @@ const User = require('../models/user')
 
 const { BadRequestError } = require('../expressError')
 const createToken = require('../helpers/tokens')
+const validateData = require('../helpers/schemas')
 const router = new express.Router()
 
 /**
@@ -20,12 +21,7 @@ const router = new express.Router()
 
 router.post("/login", async (req, res, next) => {
     try {
-        const validator = jsonschema.validate(req.body, userAuthSchema)
-
-        if (!validator.valid) {
-            const errs = validator.errors.map(e => e.stack)
-            throw new BadRequestError(errs)
-        }
+        validateData(req, userAuthSchema)
 
         const { username, password } = req.body
         const user = await User.authenticate(username, password)
@@ -51,15 +47,11 @@ router.post("/login", async (req, res, next) => {
 
 router.post("/register", async (req, res, next) => {
     try {
-        const validator = jsonschema.validate(req.body, userRegisterSchema)
-        if (!validator.valid) {
-            const errs = validator.errors.map(e => e.stack)
-            throw new BadRequestError(errs)
-        }
+        validateData(req, userRegisterSchema)
 
         const bio = req.body.bio || ""
 
-        const newUser = User.register({...req.body, bio})
+        const newUser = await User.register({...req.body, bio})
         const token = createToken(newUser)
         return res.status(201).json({ token, success: true })
     }

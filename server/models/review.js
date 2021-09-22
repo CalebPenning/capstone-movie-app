@@ -23,8 +23,9 @@ class Review {
                 `SELECT id, title FROM movies WHERE id = $1`,
                 [movieID])
             if (!movieCheck.rows[0]) {
-                let movieInfo = await omdbAPI.getInfo(movieID)
-                console.log("this is the movie info: ", movieInfo)
+                let movieInfo = await Movie.getMovieByID(movieID)
+                console.log(movieInfo)
+                if (!movieInfo.Title) throw new BadRequestError(`Invalid ID passed`)
                 let title = movieInfo.Title
                 console.log(movieID, title)
                 let created = await Movie.create({id: movieID, title})

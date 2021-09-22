@@ -2,7 +2,9 @@ const jsonschema = require('jsonschema')
 const express = require('express')
 const Review = require('../models/review')
 const { BadRequestError } = require('../expressError')
+const newMovieSchema = require('../schemas/movieNew.json')
 const Movie = require('../models/movie')
+const validateData = require('../helpers/schemas')
 
 const router = new express.Router()
 
@@ -21,7 +23,6 @@ const router = new express.Router()
         return next(e)
     }
 })
-
 
 /**
  *  GET /<id> Get a certain movie's information 
