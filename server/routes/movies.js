@@ -1,14 +1,10 @@
-const jsonschema = require('jsonschema')
 const express = require('express')
 const Review = require('../models/review')
-const { BadRequestError } = require('../expressError')
-const newMovieSchema = require('../schemas/movieNew.json')
 const Movie = require('../models/movie')
-const validateData = require('../helpers/schemas')
 
 const router = new express.Router()
 
-/**
+/** GET /movies/search
  *  Does a search via the OMDB API based on a few parameters
  *  Basically just connects the OMDB API to the application 
  */
@@ -25,7 +21,8 @@ const router = new express.Router()
 })
 
 /**
- *  GET /<id> Get a certain movie's information 
+ *  GET /movies/:id 
+ *  Get a certain movie's information 
  *  based on its imdbID
  */
 
@@ -41,11 +38,13 @@ router.get("/:id", async (req, res, next) => {
     }
 })
 
+/** 
+ * 
+ */
 router.get("/:id/reviews", async (req, res, next) => {
     try {
         const id = req.params.id
         const reviews = await Review.getMovieReviews(id)
-        console.log(reviews)
         return res.json(reviews)
     }
     catch(e) {

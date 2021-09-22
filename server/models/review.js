@@ -8,7 +8,7 @@ const omdbAPI = require('./omdbAPI')
 class Review {
     static async get(id) {
         const result = await db.query(
-            `SELECT id, rating, title, body, created_at AS createdAt
+            `SELECT id, user_id AS userID, rating, title, body, created_at AS createdAt
             FROM reviews WHERE id = $1`, [id]
         )
         if (!result.rows[0]) throw new NotFoundError(`Review with ID ${id} not found`)
@@ -24,13 +24,19 @@ class Review {
                 [movieID])
             if (!movieCheck.rows[0]) {
                 let movieInfo = await Movie.getMovieByID(movieID)
-                console.log(movieInfo)
+
                 if (!movieInfo.Title) throw new BadRequestError(`Invalid ID passed`)
                 let title = movieInfo.Title
-                console.log(movieID, title)
-                let created = await Movie.create({id: movieID, title})
-                console.log("This is created: ", created)
+
+                await Movie.create({id: movieID, title})
             }
+
+            let userCheck = await db.query(
+                `SELECT id, username FROM users WHERE id = $1`,
+                [userID]
+            )
+
+            if (!userCheck.id) throw new NotFoundError(`Cannot create review. User with ID ${userID} was not found.`)
             
             let res = await db.query(
                 `INSERT INTO reviews
@@ -41,7 +47,7 @@ class Review {
             )
 
             if (res.rows[0]) return ({ created: res.rows[0]})
-            else return new BadRequestError(`unable to review movie with ID ${movieID}`, 400)  
+            else throw new BadRequestError(`unable to review movie with ID ${movieID}`, 400)  
         }
         catch(e) {
             console.error(e)

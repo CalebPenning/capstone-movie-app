@@ -1,7 +1,9 @@
 const db = require('../db')
 const { BadRequestError, NotFoundError, ExpressError } = require('../expressError')
+const newMovieSchema = require('../schemas/movieNew.json')
 const axios = require('axios')
-const { apiKey, baseUrl } = require('../secrets')
+const { baseUrl } = require('../secrets')
+const validateData = require('../helpers/schemas')
 
 class Movie {
     /**
@@ -18,16 +20,10 @@ class Movie {
         return res.rows
     }
 
-    static async create({id, title}) {
-        const duplicateCheck = await db.query(
-            `SELECT id, title
-            FROM movies
-            WHERE id = $1`,
-            [id]
-        )
+    static async create({id, title}) {   
+        const isValidMovie = await this.getMovieByID(id)
 
-        if (duplicateCheck.rows[0]) 
-            throw new BadRequestError(`Duplicate movie: ${title}`)
+        if (!isValidMovie.Title) throw new NotFoundError(`Could not create. No movie found with IMDB ID of ${id}.`)
         
         const result = await db.query(
             `INSERT INTO movies (id, title)
@@ -42,7 +38,7 @@ class Movie {
 
     static async getMovieByID(id) {
         const res = await axios.get(`${baseUrl}i=${id}&plot=full`)
-        if (res.status === 200) return res.data
+        if (res.data.Title) return res.data
         else return new BadRequestError(`Movie with ID of ${id} not found in database.`)
     }
 

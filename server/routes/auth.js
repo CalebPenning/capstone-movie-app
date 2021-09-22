@@ -1,12 +1,7 @@
-const jsonschema = require('jsonschema')
 const express = require('express')
-
 const userAuthSchema = require('../schemas/userAuth.json')
 const userRegisterSchema = require('../schemas/userNewSchema.json')
-
 const User = require('../models/user')
-
-const { BadRequestError } = require('../expressError')
 const createToken = require('../helpers/tokens')
 const validateData = require('../helpers/schemas')
 const router = new express.Router()

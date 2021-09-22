@@ -94,6 +94,18 @@ class User {
         return result.rows[0]
     }
 
+    static async delete(id) {
+        const result = await db.query(
+            `DELETE FROM
+            users
+            WHERE id = $1
+            RETURNING id, username`,
+            [id]
+        )
+
+        return result.rows[0]
+    }
+
     // todo: get all following users, get all followed users
     // add follower, remove follower 
     // add like, remove like

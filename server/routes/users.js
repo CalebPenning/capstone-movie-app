@@ -1,7 +1,11 @@
 const User = require('../models/user')
 const Review = require('../models/review')
 const express = require('express')
-const { BadRequestError } = require('../expressError')
+const { BadRequestError, UnauthorizedError } = require('../expressError')
+const { ensureLoggedIn } = require('../middleware/auth')
+const updateUserSchema = require('../schemas/userUpdate.json')
+const validateData = require('../helpers/schemas')
+const compareUsers = require('../helpers/users')
 const router = new express.Router()
 
 /** GET /users/:id => { user: userObj }
@@ -24,13 +28,14 @@ router.get('/:id', async (req, res, next) => {
 
 /** PATCH /users/:id => { updated: userObj }
  *  Allows users to update their account information
- *  TODO: add middleware to ensure only a user that is
- *  both a) logged in and b) the same user they are updating
+ *  User attempting to make the request must have a valid jwt
+ *  and it must match the user that the account belongs to 
  */
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', ensureLoggedIn, async (req, res, next) => {
     try {
-        const userID = req.params.id
-        const updated = await User.update(userID, req.body)
+        await compareUsers(res, req.params.id)
+        validateData(req, updateUserSchema)
+        const updated = await User.update(req.params.id, req.body)
         return res.json({ updated })
     }
     catch(e) {
@@ -45,14 +50,20 @@ router.patch('/:id', async (req, res, next) => {
  *  TODO: write method for account deletion,
  *  implement middleware described above ^^
  */
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', ensureLoggedIn, async (req, res, next) => {
+    try {
+        await compareUsers(res, req.params.id)
+        const deleted = await User.delete(req.params.id)
+        return res.json({ deleted })
+    }
+    catch(e) {
 
+    }
 })
 
 /**
  *  GET /users/:id/reviews => { reviews: Array[reviewObj] }
  *  returns an object containing a list of a user's reviews
- *  todo: implement limits?
  */
 router.get('/:id/reviews', async (req, res, next) => {
     try {
