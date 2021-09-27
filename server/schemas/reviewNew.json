@@ -15,9 +15,8 @@
         }
     ],
     "required": [
-        "id",
-        "movieId",
-        "userId",
+        "movieID",
+        "userID",
         "rating",
         "title",
         "body"
@@ -31,7 +30,7 @@
                 1
             ]
         },
-        "movieId": {
+        "movieID": {
             "type": "string",
             "title": "movieId",
             "description": "ID for Movie the review is associated with",
@@ -39,7 +38,7 @@
                 "asda400"
             ]
         },
-        "userId": {
+        "userID": {
             "type": "integer",
             "title": "userId",
             "description": "ID of user that posted review",

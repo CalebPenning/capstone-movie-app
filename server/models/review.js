@@ -8,7 +8,7 @@ const omdbAPI = require('./omdbAPI')
 class Review {
     static async get(id) {
         const result = await db.query(
-            `SELECT id, user_id AS userID, rating, title, body, created_at AS createdAt
+            `SELECT id, user_id AS "userID", rating, title, body, created_at AS "createdAt"
             FROM reviews WHERE id = $1`, [id]
         )
         if (!result.rows[0]) throw new NotFoundError(`Review with ID ${id} not found`)
@@ -19,6 +19,7 @@ class Review {
     static async create({movieID, userID, rating, title, body}) {
         try {
             // check for movie in db, if not there, create it
+            console.log(arguments)
             let movieCheck = await db.query(
                 `SELECT id, title FROM movies WHERE id = $1`,
                 [movieID])
@@ -31,10 +32,7 @@ class Review {
                 await Movie.create({id: movieID, title})
             }
 
-            let userCheck = await db.query(
-                `SELECT id, username FROM users WHERE id = $1`,
-                [userID]
-            )
+            let userCheck = await User.get(userID)
 
             if (!userCheck.id) throw new NotFoundError(`Cannot create review. User with ID ${userID} was not found.`)
             

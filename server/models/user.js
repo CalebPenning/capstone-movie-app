@@ -81,16 +81,18 @@ class User {
     }
 
     static async get(id) {
+        console.log(id)
         const result = await db.query(
-            `SELECT username,
+            `SELECT id,
+                    username,
                     first_name AS firstName,
                     last_name AS lastName,
                     email,
                     bio
             FROM users
             WHERE id = $1`, [id])
-
-        if (!result.rows[0]) throw new NotFoundError(`No known user with id ${id}`)
+        console.log("here is the result from the get method: ", result.rows)
+        if (!result.rows) throw new NotFoundError(`No known user with id ${id}`)
         return result.rows[0]
     }
 
@@ -185,7 +187,7 @@ class User {
             AND follows.user_following_id = $1`, [userID]
         )
         
-        if (!following.rows[0]) throw new BadRequestError(`Could not get follows for User with ID ${userID}`)
+        if (!following.rows[0]) return []
 
         return following.rows
     }

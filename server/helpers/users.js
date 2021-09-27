@@ -7,8 +7,10 @@ const { UnauthorizedError, BadRequestError } = require('../expressError')
  * compare whether or not they are the same user
  */
 async function compareUsers(res, originalUserID) {
+    console.log(`This is the original user id passed into compare users: ${originalUserID}`)
     const requestingUser = res.locals.user.username
     const originalUser = await User.get(originalUserID)
+    console.log(`THIS IS THE ORIGINAL USER GRABBED FROM THE GET METHOD: ${originalUser}`)
     if (requestingUser !== originalUser.username) {
         throw new UnauthorizedError(`You do not have permissions to post information to another account.`)
     }
@@ -30,8 +32,8 @@ async function ensureUsers (followingID, followedID) {
     // check if user already follows user
     const followCheck = await db.query(
         `SELECT 
-        user_following_id AS userFollowingID, 
-        user_to_be_followed_id AS userFollowedID
+        user_following_id AS "userFollowingID", 
+        user_to_be_followed_id AS "userFollowedID"
         FROM follows
         WHERE user_following_id = $1
         AND user_to_be_followed_id = $2`,

@@ -9,6 +9,10 @@ const { UnauthorizedError, NotFoundError } = require('../expressError')
 const validateData = require('../helpers/schemas')
 const { compareUsers } = require('../helpers/users')
 
+router.get("/test", async (req, res, next) => {
+
+})
+
 router.get("/:id", async (req, res, next) => {
     try {
         let result = await Review.get(req.params.id)
@@ -42,7 +46,9 @@ router.patch("/:id", ensureLoggedIn, async (req, res, next) => {
     try {
         const review = await Review.get(req.params.id)
         if (!review.id) throw new NotFoundError(`Review with ID ${req.params.id} not found`)
-        const originalUser = User.get(review.userID)
+        console.log(review)
+        const originalUser = await User.get(review.userID)
+        console.log(`THIS IS THE USER GRABBED IN THE PATCH METHOD: ${originalUser}`)
         await compareUsers(res, originalUser.id)
         validateData(req, updateReviewSchema)
         let data = req.body
@@ -60,7 +66,7 @@ router.delete("/:id", ensureLoggedIn, async (req, res, next) => {
     try {
         const review = await Review.get(req.params.id)
         if (!review.id) throw new NotFoundError(`Review with ID ${req.params.id} not found`)
-        await compareUsers(res, req.params.id)
+        await compareUsers(res, review.userID)
         const deleted = await Review.deleteReview(req.params.id)
         return res.json({deleted})
     }
