@@ -154,12 +154,12 @@ class User {
             FROM follows
             WHERE user_following_id = $1
             AND user_to_be_followed_id = $2
-            RETURNING user_to_be_followed_id AS userToBeFollowedId`,
+            RETURNING user_to_be_followed_id AS unfollowedUserID`,
             [userID, userToUnfollowID]
         )
 
         if (!result.rows[0]) throw new BadRequestError(`Could not unfollow user. Check errors`)
-
+        console.log(result.rows)
         return result.rows[0]
     }
 
@@ -210,7 +210,7 @@ class User {
             AND follows.user_to_be_followed_id = $1`, [userID]
         )
 
-        if (!followers.rows[0]) throw new BadRequestError(`Could not get followers for User with ID ${userID}`)
+        if (!followers.rows[0]) return { message: `User with ID ${userID} doesn't have any followers yet!`}
 
         return followers.rows
     }
@@ -289,7 +289,7 @@ class User {
             [userID]
         )
 
-        if (!result.rows[0]) return { message: `User with ID ${userID} hasn't published any reviews yet` }
+        if (!result.rows[0]) return { message: `User with ID ${userID} hasn't liked any reviews yet` }
     
         return result.rows
     }

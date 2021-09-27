@@ -25,7 +25,7 @@ async function ensureUsers (followingID, followedID) {
     const followedUser = await User.get(followedID)
 
     if (!followingUser.username || !followedUser.username) {
-        throw new BadRequestError(`Couldn't one or more users given these ids: YOUR ID: ${followingID} THEIR ID: ${followedID}`)
+        throw new BadRequestError(`Couldn't follow user with ID: ${followedID}`)
     }
     // check if user already follows user
     const followCheck = await db.query(

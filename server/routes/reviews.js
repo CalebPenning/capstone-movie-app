@@ -7,6 +7,7 @@ const { ensureLoggedIn } = require('../middleware/auth')
 const User = require('../models/user')
 const { UnauthorizedError, NotFoundError } = require('../expressError')
 const validateData = require('../helpers/schemas')
+const { compareUsers } = require('../helpers/users')
 
 router.get("/:id", async (req, res, next) => {
     try {
@@ -25,10 +26,7 @@ router.get("/:id", async (req, res, next) => {
 router.post("/", ensureLoggedIn, async (req, res, next) => {
     try {
         const user = await User.get(req.body.userID)
-        console.log(res.locals.user)
-        if (user.username !== res.locals.user.username) {
-            throw new UnauthorizedError(`You cannot post reviews for another user.`)
-        }
+        await compareUsers(res, user.id)
         validateData(req, newReviewSchema)
         let result = await Review.create(req.body)
         return res.status(201).json(result)
@@ -45,9 +43,7 @@ router.patch("/:id", ensureLoggedIn, async (req, res, next) => {
         const review = await Review.get(req.params.id)
         if (!review.id) throw new NotFoundError(`Review with ID ${req.params.id} not found`)
         const originalUser = User.get(review.userID)
-        if (res.locals.user.username !== originalUser.username) {
-            throw new UnauthorizedError(`You cannot edit another user's reviews.`)
-        }
+        await compareUsers(res, originalUser.id)
         validateData(req, updateReviewSchema)
         let data = req.body
         const updatedReview = await Review.updateReview(req.params.id, data)
@@ -64,10 +60,7 @@ router.delete("/:id", ensureLoggedIn, async (req, res, next) => {
     try {
         const review = await Review.get(req.params.id)
         if (!review.id) throw new NotFoundError(`Review with ID ${req.params.id} not found`)
-        const originalUser = await User.get(review.userID)
-        if (res.locals.user.username !== originalUser.username) {
-            throw new UnauthorizedError(`You cannot delete another user's posts, no matter how tempting.`)
-        }
+        await compareUsers(res, req.params.id)
         const deleted = await Review.deleteReview(req.params.id)
         return res.json({deleted})
     }
