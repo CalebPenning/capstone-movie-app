@@ -5,7 +5,7 @@ const { BadRequestError, UnauthorizedError } = require('../expressError')
 const { ensureLoggedIn } = require('../middleware/auth')
 const updateUserSchema = require('../schemas/userUpdate.json')
 const validateData = require('../helpers/schemas')
-const compareUsers = require('../helpers/users')
+const { compareUsers, ensureUsers, ensureFollowing } = require('../helpers/users')
 const router = new express.Router()
 
 /** GET /users/:id => { user: userObj }
@@ -82,12 +82,12 @@ router.get('/:id/reviews', async (req, res, next) => {
  *  JSON body should have one attribute: userToFollowId,
  *  which is a number that corresponds to the ID of the user to follow.
  */
-router.post('/:id/following', async (req, res, next) => {
+router.post('/:id/following', ensureLoggedIn, async (req, res, next) => {
     try {
         const userID = req.params.id
         const { userToFollowId } = req.body
-        if (!userToFollowID) throw new BadRequestError(`Must pass a user ID in the request body`)
-        if (typeof userToFollowId !== "number") throw new BadRequestError("ID must be type number")
+        await compareUsers(res, userID)
+        await ensureUsers(userID, userToFollowId)
         const followed = await User.followUser(userID, userToFollowId)
         return res.json({ followed })
     }
@@ -119,7 +119,8 @@ router.delete('/:id/following', async (req, res, next) => {
     try {
         const userID = req.params.id
         const { userToUnfollowID } = req.body
-        if (typeof userToUnfollowID !== "number") throw new BadRequestError("ID must be type number")
+        await compareUsers(res, userID)
+        await ensureFollowing(userID, userToUnfollowID)
         const unfollowed = await User.unfollowUser(userID, userToUnfollowID)
         return res.json({ unfollowed })
     }

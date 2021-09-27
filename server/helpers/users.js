@@ -41,4 +41,27 @@ async function ensureUsers (followingID, followedID) {
     if (followCheck.rows.length) throw new BadRequestError(`You already follow ${followedUser.username}`)
 }
 
-module.exports = compareUsers
+/**
+ * Helper function to make sure a requesting user is actually following another user
+ *  this function will run before a user unfollows a user, and throw an error if unsuccessful
+ *  otherwise, whatever function body it runs in should continue 
+ */
+async function ensureFollowing(followingID, followedID) {
+    const result = await db.query(
+        `SELECT
+        user_following_id AS userFollowingID,
+        user_to_be_followed_id AS userFollowedID
+        FROM follows
+        WHERE user_following_id = $1
+        AND user_to_be_followed_id = $2`,
+        [followingID, followedID]
+    )
+
+    if (!result.rows[0]) throw new BadRequestError(`You can't unfollow a user you do not already follow.`)
+}
+
+module.exports = { 
+    compareUsers,
+    ensureUsers,
+    ensureFollowing
+}
