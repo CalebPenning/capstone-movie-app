@@ -86,10 +86,10 @@ router.get('/:id/reviews', async (req, res, next) => {
 router.post('/:id/following', ensureLoggedIn, async (req, res, next) => {
     try {
         const userID = req.params.id
-        const { userToFollowId } = req.body
+        const { userToFollowID } = req.body
         await compareUsers(res, userID)
-        await ensureUsers(userID, userToFollowId)
-        const followed = await User.followUser(userID, userToFollowId)
+        await ensureUsers(userID, userToFollowID)
+        const followed = await User.followUser(userID, userToFollowID)
         return res.json({ followed })
     }
     catch(e) {

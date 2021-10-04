@@ -19,7 +19,6 @@ class Review {
     static async create({movieID, userID, rating, title, body}) {
         try {
             // check for movie in db, if not there, create it
-            console.log(arguments)
             let movieCheck = await db.query(
                 `SELECT id, title FROM movies WHERE id = $1`,
                 [movieID])
@@ -31,7 +30,7 @@ class Review {
 
                 await Movie.create({id: movieID, title})
             }
-
+            // ensure valid userID passed
             let userCheck = await User.get(userID)
 
             if (!userCheck.id) throw new NotFoundError(`Cannot create review. User with ID ${userID} was not found.`)
@@ -45,7 +44,7 @@ class Review {
             )
 
             if (res.rows[0]) return ({ created: res.rows[0]})
-            else throw new BadRequestError(`unable to review movie with ID ${movieID}`, 400)  
+            else throw new BadRequestError(`unable to review movie with ID ${movieID}`)  
         }
         catch(e) {
             console.error(e)

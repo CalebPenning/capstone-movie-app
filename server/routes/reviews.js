@@ -9,10 +9,9 @@ const { UnauthorizedError, NotFoundError } = require('../expressError')
 const validateData = require('../helpers/schemas')
 const { compareUsers } = require('../helpers/users')
 
-router.get("/test", async (req, res, next) => {
-
-})
-
+/** GET /reviews/:id
+ *  Retrieves one review, based on its ID
+ */
 router.get("/:id", async (req, res, next) => {
     try {
         let result = await Review.get(req.params.id)

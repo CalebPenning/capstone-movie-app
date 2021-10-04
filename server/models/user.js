@@ -81,7 +81,6 @@ class User {
     }
 
     static async get(id) {
-        console.log(id)
         const result = await db.query(
             `SELECT id,
                     username,
@@ -91,8 +90,7 @@ class User {
                     bio
             FROM users
             WHERE id = $1`, [id])
-        console.log("here is the result from the get method: ", result.rows)
-        if (!result.rows) throw new NotFoundError(`No known user with id ${id}`)
+        if (!result.rows) return {}
         return result.rows[0]
     }
 
@@ -131,8 +129,8 @@ class User {
             (user_following_id, user_to_be_followed_id)
             VALUES ($1, $2)
             RETURNING user_following_id AS userFollowingId, 
-            user_to_be_followed_id AS userFollowedId
-            `, [userID, userToFollowID]
+            user_to_be_followed_id AS userFollowedId`,
+            [userID, userToFollowID]
         )
 
         return result.rows[0]
