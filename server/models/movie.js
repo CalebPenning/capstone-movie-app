@@ -64,6 +64,7 @@ class Movie {
             for (let key in data) {
                 searchUrl += `${key}=${data[key]}&`
             }
+            console.log(`THIS IS THE SEARCH URL: ${searchUrl}`)
 
             const results = await axios.get(searchUrl)
 
