@@ -78,6 +78,8 @@ class User {
         email, bio`
 
         const result = await db.query(query, [...values, userID])
+
+        return result.rows[0]
     }
 
     static async get(id) {
