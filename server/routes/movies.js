@@ -11,6 +11,7 @@ const router = new express.Router()
 
  router.get("/search", async (req, res, next) => {
     try {
+        console.log(req)
         const results = await Movie.search(req.query)
         return res.json(results)
     } 
