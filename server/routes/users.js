@@ -8,6 +8,19 @@ const validateData = require('../helpers/schemas')
 const { compareUsers, ensureUsers, ensureFollowing } = require('../helpers/users')
 const router = new express.Router()
 
+router.get('/:username', async (req, res, next) => {
+    try {
+        const username = req.params.username
+        const user = await User.getByUsername(username)
+        if (user) return res.json({ user })
+        else return {}
+    }
+    catch(e) {
+        console.log(e)
+        return next(e)
+    }
+})
+
 /** GET /users/:id => { user: userObj }
  *  given a valid user ID, returns a user object from db
  *  used to get a user's information for their profile  

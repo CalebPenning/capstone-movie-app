@@ -35,6 +35,7 @@ class User {
     }
 
     static async register({ username, password, firstName, lastName, email, bio }) {
+        console.log(username, password, firstName, lastName, email, bio)
         const duplicateCheck = await db.query(
             `SELECT username
             FROM users
@@ -108,12 +109,12 @@ class User {
         return result.rows[0]
     }
 
-    static async getByUserName(username) {
+    static async getByUsername(username) {
         const result = await db.query(
             `SELECT id,
                     username,
-                    first_name AS "firstName"
-                    last_name AS "lastName"
+                    first_name AS "firstName",
+                    last_name AS "lastName",
                     email,
                     bio
             FROM users
