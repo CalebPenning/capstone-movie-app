@@ -73,8 +73,8 @@ class User {
         SET ${updateCols}
         WHERE id = ${usernameIdx}
         RETURNING id, username, 
-        first_name AS firstName,
-        last_name AS lastName,
+        first_name AS "firstName",
+        last_name AS "lastName",
         email, bio`
 
         const result = await db.query(query, [...values, userID])
@@ -86,8 +86,8 @@ class User {
         const result = await db.query(
             `SELECT id,
                     username,
-                    first_name AS firstName,
-                    last_name AS lastName,
+                    first_name AS "firstName",
+                    last_name AS "lastName",
                     email,
                     bio
             FROM users
@@ -105,6 +105,21 @@ class User {
             [id]
         )
 
+        return result.rows[0]
+    }
+
+    static async getByUserName(username) {
+        const result = await db.query(
+            `SELECT id,
+                    username,
+                    first_name AS "firstName"
+                    last_name AS "lastName"
+                    email,
+                    bio
+            FROM users
+            WHERE username = $1`, [username]
+        )
+        if (!result.rows) return {}
         return result.rows[0]
     }
 

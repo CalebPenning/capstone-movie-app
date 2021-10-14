@@ -7,6 +7,7 @@ function authenticateJWT(req, res, next) {
         const authHeader = req.headers && req.headers.authorization
         if (authHeader) {
             const token = authHeader.replace(/^[Bb]earer /, "").trim()
+            console.log(`Heres the token ${token} as well as the auth headers ${authHeader}`)
             res.locals.user = jwt.verify(token, SECRET_KEY)
         }
         return next()

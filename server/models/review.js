@@ -87,7 +87,7 @@ class Review {
             let res = await db.query(
                 `SELECT 
                 reviews.id as "reviewID", 
-                reviews.rating, reviews.title, 
+                reviews.rating, reviews.title AS "reviewTitle", 
                 reviews.body, 
                 reviews.created_at AS "createdAt", 
                 users.id AS "userID", 
