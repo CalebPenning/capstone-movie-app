@@ -1,7 +1,6 @@
 const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
-const { authenticateJWT } = require('./middleware/auth')
 const { NotFoundError } = require('./expressError')
 
 const authRoutes = require('./routes/auth')
@@ -13,7 +12,6 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 app.use(morgan("tiny"))
-// app.use(authenticateJWT)
 
 app.use('/auth', authRoutes)
 app.use('/movies', movieRoutes)
