@@ -2,24 +2,24 @@ const User = require('../models/user')
 const Review = require('../models/review')
 const express = require('express')
 const { BadRequestError, UnauthorizedError } = require('../expressError')
-const { ensureLoggedIn } = require('../middleware/auth')
+const { ensureLoggedIn, authenticateJWT } = require('../middleware/auth')
 const updateUserSchema = require('../schemas/userUpdate.json')
 const validateData = require('../helpers/schemas')
 const { compareUsers, ensureUsers, ensureFollowing } = require('../helpers/users')
 const router = new express.Router()
 
-router.get('/:username', async (req, res, next) => {
-    try {
-        const username = req.params.username
-        const user = await User.getByUsername(username)
-        if (user) return res.json({ user })
-        else return {}
-    }
-    catch(e) {
-        console.log(e)
-        return next(e)
-    }
-})
+// router.get('/:username', async (req, res, next) => {
+//     try {
+//         const username = req.params.username
+//         const user = await User.getByUsername(username)
+//         if (user) return res.json({ user })
+//         else return {}
+//     }
+//     catch(e) {
+//         console.log(e)
+//         return next(e)
+//     }
+// })
 
 /** GET /users/:id => { user: userObj }
  *  given a valid user ID, returns a user object from db
@@ -44,7 +44,7 @@ router.get('/:id', async (req, res, next) => {
  *  User attempting to make the request must have a valid jwt
  *  and it must match the user that the account belongs to 
  */
-router.patch('/:id', ensureLoggedIn, async (req, res, next) => {
+router.patch('/:id', [authenticateJWT, ensureLoggedIn], async (req, res, next) => {
     try {
         await compareUsers(res, req.params.id)
         validateData(req, updateUserSchema)
@@ -63,7 +63,7 @@ router.patch('/:id', ensureLoggedIn, async (req, res, next) => {
  *  TODO: write method for account deletion,
  *  implement middleware described above ^^
  */
-router.delete('/:id', ensureLoggedIn, async (req, res, next) => {
+router.delete('/:id', [authenticateJWT, ensureLoggedIn], async (req, res, next) => {
     try {
         await compareUsers(res, req.params.id)
         const deleted = await User.delete(req.params.id)
@@ -96,7 +96,7 @@ router.get('/:id/reviews', async (req, res, next) => {
  *  JSON body should have one attribute: userToFollowId,
  *  which is a number that corresponds to the ID of the user to follow.
  */
-router.post('/:id/following', ensureLoggedIn, async (req, res, next) => {
+router.post('/:id/following', [authenticateJWT, ensureLoggedIn], async (req, res, next) => {
     try {
         const userID = req.params.id
         const { userToFollowID } = req.body
@@ -129,7 +129,7 @@ router.get('/:id/following', async (req, res, next) => {
 /** DELETE => /users/:id/following => { unfollowed: userObj }
  *  Given a url param: user ID, unfollows a user based on the user ID in the json body, userToUnfollowID
  */
-router.delete('/:id/following', ensureLoggedIn, async (req, res, next) => {
+router.delete('/:id/following', [authenticateJWT, ensureLoggedIn], async (req, res, next) => {
     try {
         const userID = req.params.id
         const { userToUnfollowID } = req.body
@@ -180,7 +180,7 @@ router.get('/:id/likes', async (req, res, next) => {
  *  Given a user Id, and a json body with a Review ID,
  *  add that review to a user's 'likes'
  */
-router.post('/:id/likes', ensureLoggedIn, async (req, res, next) => {
+router.post('/:id/likes', [authenticateJWT, ensureLoggedIn], async (req, res, next) => {
     try {
         const userID = req.params.id
         await compareUsers(res, req.params.id)

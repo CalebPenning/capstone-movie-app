@@ -12,7 +12,8 @@ class User {
 
     static async authenticate(username, password) {
         const result = await db.query(
-            `SELECT username,
+            `SELECT id,
+                    username,
                     password,
                     first_name AS "firstName",
                     last_name AS lastName,
@@ -53,7 +54,7 @@ class User {
             email,
             bio)
             VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING username, first_name AS "firstName", last_name AS "lastName", email, bio`,
+            RETURNING id, username, first_name AS "firstName", last_name AS "lastName", email, bio`,
             [username, hashedPassword, firstName, lastName, email, bio]
         )
 
@@ -296,6 +297,7 @@ class User {
         const result = await db.query(
             `SELECT
             reviews.rating, reviews.title AS "reviewTitle",
+            reviews.id AS "reviewID",
             reviews.body, reviews.created_at AS "createdAt",
             users.username AS "postedBy",
             users.id AS "userID",
@@ -307,7 +309,7 @@ class User {
             [userID]
         )
 
-        if (!result.rows[0]) return { message: `User with ID ${userID} hasn't liked any reviews yet` }
+        if (!result.rows[0]) return []
     
         return result.rows
     }

@@ -3,7 +3,7 @@ const Review = require('../models/review')
 const router = new express.Router()
 const newReviewSchema = require('../schemas/reviewNew.json')
 const updateReviewSchema = require('../schemas/reviewUpdate')
-const { ensureLoggedIn } = require('../middleware/auth')
+const { ensureLoggedIn, authenticateJWT } = require('../middleware/auth')
 const User = require('../models/user')
 const { UnauthorizedError, NotFoundError } = require('../expressError')
 const validateData = require('../helpers/schemas')
@@ -26,8 +26,9 @@ router.get("/:id", async (req, res, next) => {
 /**
  *  POST / Create a new review
  */
-router.post("/", ensureLoggedIn, async (req, res, next) => {
+router.post("/", [authenticateJWT, ensureLoggedIn], async (req, res, next) => {
     try {
+        console.dir(res.locals)
         const user = await User.get(req.body.userID)
         await compareUsers(res, user.id)
         validateData(req, newReviewSchema)
@@ -41,7 +42,7 @@ router.post("/", ensureLoggedIn, async (req, res, next) => {
 })
 
 // update review
-router.patch("/:id", ensureLoggedIn, async (req, res, next) => {
+router.patch("/:id", [authenticateJWT, ensureLoggedIn], async (req, res, next) => {
     try {
         const review = await Review.get(req.params.id)
         if (!review.id) throw new NotFoundError(`Review with ID ${req.params.id} not found`)
@@ -61,7 +62,7 @@ router.patch("/:id", ensureLoggedIn, async (req, res, next) => {
     }
 })
 // delete review
-router.delete("/:id", ensureLoggedIn, async (req, res, next) => {
+router.delete("/:id", [authenticateJWT, ensureLoggedIn], async (req, res, next) => {
     try {
         const review = await Review.get(req.params.id)
         if (!review.id) throw new NotFoundError(`Review with ID ${req.params.id} not found`)
