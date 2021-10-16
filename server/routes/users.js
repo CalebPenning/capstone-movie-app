@@ -65,6 +65,7 @@ router.patch('/:id', [authenticateJWT, ensureLoggedIn], async (req, res, next) =
  */
 router.delete('/:id', [authenticateJWT, ensureLoggedIn], async (req, res, next) => {
     try {
+        console.dir(res)
         await compareUsers(res, req.params.id)
         const deleted = await User.delete(req.params.id)
         return res.json({ deleted })
@@ -199,7 +200,7 @@ router.post('/:id/likes', [authenticateJWT, ensureLoggedIn], async (req, res, ne
  * Given a user ID and a json body with a review ID,
  * remove the review from a user's 'likes'
  */
-router.delete('/:id/likes', async (req, res, next) => {
+router.delete('/:id/likes', [authenticateJWT, ensureLoggedIn], async (req, res, next) => {
     try {
         const { reviewID } = req.body
         const userID = req.params.id

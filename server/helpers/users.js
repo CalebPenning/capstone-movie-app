@@ -8,6 +8,7 @@ const { UnauthorizedError, BadRequestError } = require('../expressError')
  */
 async function compareUsers(res, originalUserID) {
     console.log(`This is the original user id passed into compare users: ${originalUserID}`)
+    console.dir(res.locals)
     const requestingUser = res.locals.user.username
     const originalUser = await User.get(originalUserID)
     console.log(`THIS IS THE ORIGINAL USER GRABBED FROM THE GET METHOD: ${originalUser}`)
