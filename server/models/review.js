@@ -171,10 +171,15 @@ class Review {
             reviews.body,
             reviews.rating,
             reviews.created_at AS "createdAt",
-            users.username AS "postedBy"
-            FROM reviews, follows, users WHERE follows.user_following_id = $1 
+            users.username AS "postedBy",
+            movies.title AS "movieTitle"
+            FROM reviews, follows, users, movies 
+            WHERE follows.user_following_id = $1 
             AND reviews.user_id = user_to_be_followed_id
-            AND users.id = user_to_be_followed_id           
+            AND users.id = user_to_be_followed_id
+            AND movies.id = reviews.movie_id
+            ORDER BY reviews.created_at DESC
+            LIMIT 20
             `, [userID]
         )
         
