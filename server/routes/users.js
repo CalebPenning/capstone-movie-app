@@ -127,6 +127,20 @@ router.get('/:id/following', async (req, res, next) => {
     }
 })
 
+router.get('/:id/following/posts', [authenticateJWT, ensureLoggedIn], async (req, res, next) => {
+    try {
+        const userID = req.params.id
+        await compareUsers(res, userID)
+        const homepagePosts = await Review.getHomepagePosts(userID)
+        return res.json({ posts: homepagePosts })
+    }
+
+    catch(e) {
+        console.log(e)
+        return next(e)
+    }
+})
+
 /** DELETE => /users/:id/following => { unfollowed: userObj }
  *  Given a url param: user ID, unfollows a user based on the user ID in the json body, userToUnfollowID
  */

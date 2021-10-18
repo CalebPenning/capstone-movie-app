@@ -150,6 +150,37 @@ class Review {
 
         return review
     }
+
+    static async getHomepagePosts(userID) {
+        const checkFollowing = await db.query(
+            `SELECT
+            user_following_id AS "userFollowingID",
+            user_to_be_followed_id AS "userToBeFollowedID"
+            FROM follows
+            WHERE user_following_id = $1`
+        , [userID])
+
+        if (!checkFollowing.rows.length) return []
+        // where user to follow id = user id 
+        // and 
+        const result = await db.query(
+            `SELECT reviews.id AS "reviewID",
+            reviews.movie_id AS "movieID",
+            reviews.user_id AS "userID",
+            reviews.title AS "reviewTitle",
+            reviews.body,
+            reviews.rating,
+            reviews.created_at AS "createdAt",
+            users.username AS "postedBy"
+            FROM reviews, follows, users WHERE follows.user_following_id = $1 
+            AND reviews.user_id = user_to_be_followed_id
+            AND users.id = user_to_be_followed_id           
+            `, [userID]
+        )
+        
+        if (result.rows) return result.rows
+        else return []
+    }
 }
 
 module.exports = Review
