@@ -65,12 +65,12 @@ class Review {
                 reviews.created_at AS "createdAt", 
                 movies.id AS "movieID", 
                 movies.title AS "movieTitle",
-                users.username
+                users.username AS "postedBy"
                 FROM reviews, movies, users
                 WHERE reviews.movie_id = movies.id 
                 AND reviews.user_id = $1
                 AND users.id = $1
-                ORDER BY reviews.created_at ASC`,
+                ORDER BY reviews.created_at DESC`,
                 [userID]
             )
             return res.rows
@@ -91,13 +91,14 @@ class Review {
                 reviews.body, 
                 reviews.created_at AS "createdAt", 
                 users.id AS "userID", 
-                users.username, movies.title, 
+                users.username AS "postedBy", 
+                movies.title AS "movieTitle", 
                 movies.id AS "movieID"
                 FROM reviews, users, movies
                 WHERE reviews.movie_id = $1 
                 AND reviews.user_id = users.id 
                 AND movies.id = reviews.movie_id
-                ORDER BY reviews.created_at ASC`, [movieID]
+                ORDER BY reviews.created_at DESC`, [movieID]
             )
             return res.rows
         }

@@ -6,7 +6,6 @@
     "description": "This Schema validates all incoming reviews",
     "examples": [
         {
-            "id": 1,
             "movieId": "asda400",
             "userId": 30,
             "rating": 10,
