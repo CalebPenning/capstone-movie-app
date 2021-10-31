@@ -1,4 +1,4 @@
-## Cinema Circle: 
+## Cinema: 
 ### A movie-based social media site
 ---
 
@@ -6,8 +6,84 @@
 - There are a lot of movies and shows to watch out there. It can be hard to keep track. And in an age where hanging out with your friends to go to the cinema is not always an option, it can be quite lonely to find time to watch what you'd like. It would be nice if you could share your movie experiences with friends, in a 'feed' format that you could check in your downtime.
 ---
 #### The Solution:
-- Enter Cinema Circle. Built on top of the OMDB API, this end-to-end web application will allow users to look up information about movies and tv shows, write short-form reviews (comparable to an extended tweet) for titles they've seen, and follow their friends to see what they've been up to, silver screen-wise.
+- Enter Cinema. Built on top of the OMDB API, this end-to-end web application will allow users to look up information about movies and tv shows, write short-form reviews (comparable to an extended tweet) for titles they've seen, and follow their friends to see what they've been up to, silver screen-wise.
 ---
+
+##### Getting started: 
+- download the code
+- npm install
+- run tests with 'jest'
+- With psql installed run "createdb cinema"
+- run db-schema, then db-seed.sql
+- node/nodemon server.js
+- By default runs on port 3001, can be configured to any port.
+
+###### Routes:
+- POST => /auth/register 
+> Used to sign up new users. A valid body is a JSON object consisting like this:
+> {username: "username", password: "password", firstName: "first", lastName: "last", email: "email@mail.com", bio: "hello world"}
+> if successful, returns a 201 status code, as well as a JWT.
+
+- POST => /auth/login
+> Used to sign in returning users. A valid body looks like this:
+> {username: "username", password: "password"}
+> If successful, returns a valid token.
+
+- GET => /movies/search
+> Used to search for movies and other media. 
+> Takes a query param 's', which is the search term. 
+> Returns the first page of results. param 'page' can be passed in to get to other pages of results, defaults to 1.
+
+- GET => /movies/:id
+> Given a valid IMDB ID, return all information about a piece of media.
+
+- GET => /movies/:id/reviews
+> Given a valid IMDB ID, return all reviews that user's have posted for it.
+
+- GET => /reviews/:id
+> Given a valid id, return a single review. This route is not called by the client app directly at all, and is used mainly for debugging. It is called however, by the api on patch and delete. 
+
+- POST => /reviews/
+> Create a new review. JSON body should look like:
+> { movieID: "someimdbid", userID: currentUserID, rating: some num 1-10, title: "title", body: "body"}
+> If valid, returns a 201 status code, and a "created" object with the review contents.
+
+- PATCH/DELETE => /reviews/:id
+> On delete, if id is valid, review with that id will be deleted from database.
+> On patch, users can update rating, title, and body, assuming the new data passed in is still considered valid.
+
+GET => /users/:id
+> Retrieves a single user object, given a valid id. If not valid, returns a 404 status code.
+
+GET => /users/:id/reviews
+> Retrieves all reviews by a single user. If there are no reviews by the user that corresponds to the route :id, an empty array is returned.
+
+GET => /users/:id/following
+> Retrieves a list of all users the corresponding user is following. If there aren't any, return an empty array.
+
+POST => /users/:id/following
+> Given a JSON body with the format { userToFollowID: 10 }, follow a user.
+> if either the path :id is not valid, the id is the same as the body id, or the user already follows a user with the id passed, it will error out.
+> If successful, you just followed a new user! Try the get method below to see your new followed users posts!
+
+DELETE => /users/:id/following
+> Given a JSON body with {userToUnfollowID}, unfollows the corresponding user. If the follow isn't found, errors. 
+
+GET => /users/:id/following/posts
+> Get an array of posts from users you follow, sorted by how recently they are posted (newest at the top)
+> If no users are followed, returns an empty array
+
+GET => /users/:id/followers
+> Get an array of users that follow the corresponding user. If none, returns an empty array.
+
+GET => /users/:id/likes
+> Returns all posts that a user has liked, sorted by most recent date. If empty, returns an empty array
+
+POST => /users/:id/likes
+> Given a valid review ID, add that post to the user's likes.
+
+DELETE => /users/:id/likes
+> Given a valid review ID, remove that post from the users likes.
 
 #### Use Cases:
 | Use Case:                 | Signing Up                                                                                                                                                                  | Logging In                                                                                                                                                                                                                                                 | Searching For Data                                                                                                                                                                                                                                    | Leaving A Review                                                                                                                                                                                                                               | Following A User                                                                                                                                                                                                                                                                                                                                                               |
