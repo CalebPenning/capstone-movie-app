@@ -305,7 +305,8 @@ class User {
             movies.id AS "movieID"
             FROM reviews, likes, users, movies
             WHERE likes.user_id = $1 AND likes.review_id = reviews.id
-            AND reviews.user_id = users.id AND reviews.movie_id = movies.id`,
+            AND reviews.user_id = users.id AND reviews.movie_id = movies.id
+            ORDER BY reviews.created_at DESC`,
             [userID]
         )
 

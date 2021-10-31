@@ -6,7 +6,7 @@ const PORT = +process.env.PORT || 3001
 
 const getDbUri = () => (
     process.env.NODE_ENV === "test" ?
-        "jobly_test" :
+        "cinema_test" :
         process.env.DATABASE_URL || "cinema"
 )
 
